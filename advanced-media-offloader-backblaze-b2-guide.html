@@ -1,0 +1,595 @@
+<!-- Advanced Media Offloader + Backblaze B2 설정 가이드 (WordPress / WooCommerce / Dokan) -->
+<style>
+  .bk-guide-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    color: inherit;
+    line-height: 1.75;
+  }
+  .bk-intro-box {
+    background: #f0f6ff;
+    border-left: 4px solid #2563eb;
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin-bottom: 28px;
+  }
+  .bk-intro-box p { margin: 0; }
+
+  .bk-step-block {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .bk-step-header {
+    background: #1e40af;
+    color: #fff;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .bk-step-num {
+    background: #fff;
+    color: #1e40af;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .bk-step-title { font-weight: 700; margin: 0; }
+  .bk-step-body { padding: 20px 24px; }
+
+  .bk-ol { padding-left: 22px; margin: 10px 0 16px; }
+  .bk-ol li { margin-bottom: 8px; }
+
+  .bk-tip {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin: 14px 0;
+  }
+  .bk-tip strong { color: #92400e; }
+
+  .bk-warn {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin: 14px 0;
+  }
+  .bk-warn strong { color: #991b1b; }
+
+  .bk-info {
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin: 14px 0;
+  }
+  .bk-info strong { color: #166534; }
+
+  .bk-code-wrap {
+    background: #1e293b;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 14px 0;
+  }
+  .bk-code-label {
+    background: #334155;
+    color: #94a3b8;
+    padding: 6px 14px;
+    font-size: 0.8em;
+    font-family: monospace;
+  }
+  .bk-code-wrap pre {
+    margin: 0;
+    padding: 16px 18px;
+    overflow-x: auto;
+  }
+  .bk-code-wrap code {
+    color: #e2e8f0;
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 1.6;
+    white-space: pre;
+  }
+
+  /* 테이블 */
+  .bk-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 16px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+  }
+  .bk-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+  }
+  .bk-table th {
+    background: #1e40af;
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .bk-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+  .bk-table tr:last-child td { border-bottom: none; }
+  .bk-table tr:nth-child(even) td { background: #f8fafc; }
+
+  .bk-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+  }
+  .bk-badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .bk-badge-green { background: #dcfce7; color: #166534; }
+  .bk-badge-red { background: #fee2e2; color: #991b1b; }
+
+  .bk-section-title {
+    font-weight: 700;
+    margin: 20px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .bk-endpoint-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-family: monospace;
+  }
+  .bk-endpoint-box .bk-label {
+    color: #64748b;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+    font-family: sans-serif;
+  }
+
+  .bk-checklist { list-style: none; padding-left: 0; margin: 10px 0; }
+  .bk-checklist li { padding: 5px 0 5px 28px; position: relative; }
+  .bk-checklist li::before {
+    content: '✅';
+    position: absolute;
+    left: 0;
+  }
+
+  .bk-flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    align-items: center;
+    margin: 12px 0;
+  }
+  .bk-flow-item {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-weight: 600;
+    color: #1d4ed8;
+    white-space: nowrap;
+  }
+  .bk-flow-arrow {
+    padding: 0 8px;
+    color: #94a3b8;
+    font-size: 1.2em;
+  }
+</style>
+
+<div class="bk-guide-wrap">
+
+  <div class="bk-intro-box">
+    <p>이 가이드는 <strong>WordPress + WooCommerce + Dokan</strong> 환경에서 <strong>Advanced Media Offloader</strong> 플러그인을 사용해 미디어 파일을 <strong>Backblaze B2</strong> 클라우드 스토리지로 오프로드하는 전체 설정 방법을 단계별로 안내합니다.</p>
+  </div>
+
+  <!-- 사전 준비 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">0</div>
+      <p class="bk-step-title">사전 준비 — 필요한 것 확인</p>
+    </div>
+    <div class="bk-step-body">
+      <ul class="bk-checklist">
+        <li>Backblaze B2 계정 (없으면 <strong>backblaze.com</strong>에서 무료 가입)</li>
+        <li>WordPress 관리자 계정 및 서버의 <code>wp-config.php</code> 편집 권한</li>
+        <li>Advanced Media Offloader 플러그인 (WordPress.org 무료 제공)</li>
+        <li>서버에 <strong>PHP cURL</strong> 및 <strong>AWS SDK</strong> 요구사항 충족 (PHP 7.4+)</li>
+      </ul>
+      <div class="bk-info">
+        <strong>✅ WooCommerce / Dokan 호환성:</strong> Advanced Media Offloader는 WordPress 핵심 훅을 사용해 URL을 재작성하므로 WooCommerce 상품 이미지, 갤러리, Dokan 벤더 업로드 파일 모두 자동으로 오프로드됩니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">1</div>
+      <p class="bk-step-title">Backblaze B2 — 버킷(Bucket) 생성</p>
+    </div>
+    <div class="bk-step-body">
+      <ol class="bk-ol">
+        <li><strong>backblaze.com</strong>에 로그인 후 좌측 메뉴에서 <strong>B2 Cloud Storage → Buckets</strong> 클릭</li>
+        <li><strong>Create a Bucket</strong> 버튼 클릭</li>
+        <li>버킷 이름 입력 (예: <code>mysite-media</code>) — 영문 소문자, 숫자, 하이픈만 사용</li>
+        <li><strong>Files in Bucket are:</strong> → <span class="bk-badge bk-badge-blue">Public</span> 선택 (미디어 파일 공개 접근 필요)</li>
+        <li>나머지 옵션(Encryption, Object Lock)은 기본값 유지</li>
+        <li><strong>Create a Bucket</strong> 클릭</li>
+      </ol>
+
+      <div class="bk-tip">
+        <strong>💡 버킷 생성 후 확인할 정보:</strong> 버킷 목록에서 생성된 버킷을 클릭하면 <strong>Endpoint</strong> 주소가 표시됩니다. 이 주소를 메모해 두세요.<br>
+        예: <code>s3.us-west-004.backblazeb2.com</code>
+      </div>
+
+      <p class="bk-section-title">엔드포인트 및 도메인 URL 구조</p>
+      <div class="bk-endpoint-box">
+        <div class="bk-label">Endpoint URL (wp-config.php에 입력할 값)</div>
+        https://s3.<strong>리전코드</strong>.backblazeb2.com
+      </div>
+      <div class="bk-endpoint-box">
+        <div class="bk-label">Domain URL (파일 서빙에 사용)</div>
+        https://<strong>버킷이름</strong>.s3.<strong>리전코드</strong>.backblazeb2.com/
+      </div>
+      <p>예: 버킷명 <code>mysite-media</code>, 리전 <code>us-west-004</code>인 경우</p>
+      <div class="bk-endpoint-box">
+        Endpoint → <code>https://s3.us-west-004.backblazeb2.com</code><br>
+        Domain &nbsp; → <code>https://mysite-media.s3.us-west-004.backblazeb2.com/</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">2</div>
+      <p class="bk-step-title">Backblaze B2 — Application Key (API 키) 생성</p>
+    </div>
+    <div class="bk-step-body">
+      <ol class="bk-ol">
+        <li>Backblaze 대시보드 좌측 메뉴 → <strong>Application Keys</strong></li>
+        <li><strong>Add a New Application Key</strong> 클릭</li>
+        <li>아래 표대로 설정 후 <strong>Create New Key</strong> 클릭</li>
+      </ol>
+
+      <div class="bk-table-scroll">
+        <table class="bk-table">
+          <thead>
+            <tr>
+              <th>설정 항목</th>
+              <th>입력값</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Name of Key</td>
+              <td><code>WordPress-Offload-Key</code></td>
+              <td>식별하기 쉬운 이름 (자유롭게 설정)</td>
+            </tr>
+            <tr>
+              <td>Allow access to Bucket(s)</td>
+              <td>Step 1에서 만든 버킷 선택</td>
+              <td>"All" 대신 특정 버킷만 선택 권장 (보안)</td>
+            </tr>
+            <tr>
+              <td>Type of Access</td>
+              <td><span class="bk-badge bk-badge-blue">Read and Write</span></td>
+              <td>업로드 및 읽기 모두 필요</td>
+            </tr>
+            <tr>
+              <td>File name prefix</td>
+              <td>비워두기</td>
+              <td>플러그인이 경로를 자동 관리</td>
+            </tr>
+            <tr>
+              <td>Duration (in seconds)</td>
+              <td>비워두기</td>
+              <td>만료 없음 (무기한 유효)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bk-warn">
+        <strong>⚠️ 중요:</strong> 키 생성 직후 표시되는 <strong>keyID</strong>와 <strong>applicationKey</strong>를 반드시 즉시 복사해서 안전한 곳에 저장하세요. 창을 닫으면 Application Key는 다시 확인할 수 없습니다!
+      </div>
+
+      <p class="bk-section-title">복사해야 할 두 가지 값</p>
+      <div class="bk-table-scroll">
+        <table class="bk-table">
+          <thead>
+            <tr><th>항목</th><th>wp-config.php 상수명</th><th>예시 형태</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>keyID</td>
+              <td><code>ADVMO_BACKBLAZE_B2_KEY</code></td>
+              <td><code>004abc123def...</code></td>
+            </tr>
+            <tr>
+              <td>applicationKey</td>
+              <td><code>ADVMO_BACKBLAZE_B2_SECRET</code></td>
+              <td><code>K004XXXXXXXXXXXXXXXXXXXX</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">3</div>
+      <p class="bk-step-title">Advanced Media Offloader 플러그인 설치 및 활성화</p>
+    </div>
+    <div class="bk-step-body">
+      <ol class="bk-ol">
+        <li>WordPress 관리자 → <strong>플러그인 → 새 플러그인 추가</strong></li>
+        <li>검색창에 <code>Advanced Media Offloader</code> 입력</li>
+        <li><strong>지금 설치</strong> 클릭 → 설치 완료 후 <strong>활성화</strong> 클릭</li>
+        <li>활성화 후 좌측 메뉴에 <strong>Media Offloader</strong> 항목이 생성됨</li>
+      </ol>
+      <div class="bk-tip">
+        <strong>💡 수동 설치:</strong> WordPress.org에서 ZIP 파일을 다운로드한 경우 <strong>플러그인 → 새 플러그인 추가 → 플러그인 업로드</strong>에서 ZIP 파일을 업로드하여 설치할 수 있습니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">4</div>
+      <p class="bk-step-title">wp-config.php에 Backblaze B2 인증 정보 추가</p>
+    </div>
+    <div class="bk-step-body">
+      <p>플러그인의 보안 정책상 클라우드 인증 정보는 데이터베이스가 아닌 <code>wp-config.php</code> 파일에 저장해야 합니다.</p>
+
+      <ol class="bk-ol">
+        <li>FTP/SFTP 또는 호스팅 파일 관리자로 서버의 <strong>wp-config.php</strong> 파일을 엽니다<br>(WordPress 루트 디렉터리에 위치)</li>
+        <li>아래 코드를 찾아 그 <strong>바로 위</strong>에 B2 설정 코드를 붙여넣습니다:</li>
+      </ol>
+
+      <div class="bk-endpoint-box" style="font-family:sans-serif; color:#64748b; font-size:0.9em;">
+        👆 이 줄 바로 위에 아래 코드를 삽입하세요: <code>/* That's all, stop editing! Happy publishing. */</code>
+      </div>
+
+      <div class="bk-code-wrap">
+        <div class="bk-code-label">wp-config.php — Backblaze B2 설정</div>
+        <pre><code>// ===== Advanced Media Offloader - Backblaze B2 설정 =====
+define('ADVMO_BACKBLAZE_B2_KEY',      'your-key-id');           // keyID
+define('ADVMO_BACKBLAZE_B2_SECRET',   'your-application-key');  // applicationKey
+define('ADVMO_BACKBLAZE_B2_BUCKET',   'your-bucket-name');      // 버킷 이름
+define('ADVMO_BACKBLAZE_B2_REGION',   'us-west-004');           // 버킷 리전
+define('ADVMO_BACKBLAZE_B2_DOMAIN',   'https://your-bucket-name.s3.us-west-004.backblazeb2.com/');
+define('ADVMO_BACKBLAZE_B2_ENDPOINT', 'https://s3.us-west-004.backblazeb2.com');
+// ========================================================</code></pre>
+      </div>
+
+      <div class="bk-tip">
+        <strong>💡 각 값 입력 방법:</strong><br>
+        • <strong>KEY</strong> → Step 2에서 복사한 <em>keyID</em><br>
+        • <strong>SECRET</strong> → Step 2에서 복사한 <em>applicationKey</em><br>
+        • <strong>BUCKET</strong> → Step 1에서 생성한 버킷 이름<br>
+        • <strong>REGION</strong> → 버킷 상세 페이지의 Endpoint에서 확인 (예: <code>us-west-004</code>)<br>
+        • <strong>DOMAIN</strong> → <code>https://버킷명.s3.리전.backblazeb2.com/</code> (끝에 / 포함)<br>
+        • <strong>ENDPOINT</strong> → <code>https://s3.리전.backblazeb2.com</code> (끝에 / 없음)
+      </div>
+
+      <div class="bk-warn">
+        <strong>⚠️ 보안 주의:</strong> wp-config.php 파일을 공개 저장소(GitHub 등)에 업로드하거나 공유하지 마세요. API 키가 노출되면 즉시 Backblaze에서 해당 키를 삭제하고 재발급해야 합니다.
+      </div>
+
+      <p>파일 저장 후 서버에 업로드하세요.</p>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">5</div>
+      <p class="bk-step-title">WordPress 대시보드에서 플러그인 설정 및 연결 테스트</p>
+    </div>
+    <div class="bk-step-body">
+      <ol class="bk-ol">
+        <li>WordPress 관리자 → <strong>Media Offloader → General Settings</strong></li>
+        <li><strong>Cloud Provider</strong> 항목에서 <span class="bk-badge bk-badge-blue">Backblaze B2</span> 선택</li>
+        <li><strong>Test Connection</strong> 버튼 클릭 → 성공 메시지 확인</li>
+      </ol>
+
+      <div class="bk-warn">
+        <strong>⚠️ 연결 실패 시 확인 사항:</strong><br>
+        • wp-config.php의 KEY / SECRET 오타 여부<br>
+        • ENDPOINT URL에 <code>https://</code> 포함 여부<br>
+        • DOMAIN URL 끝에 <code>/</code> 포함 여부<br>
+        • Backblaze에서 해당 버킷의 Access가 <em>Public</em>인지 확인
+      </div>
+
+      <p class="bk-section-title">주요 설정 옵션 설명</p>
+      <div class="bk-table-scroll">
+        <table class="bk-table">
+          <thead>
+            <tr>
+              <th>설정 항목</th>
+              <th>권장값</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Offload New Uploads</td>
+              <td><span class="bk-badge bk-badge-green">활성화</span></td>
+              <td>새로 업로드되는 미디어 자동 오프로드</td>
+            </tr>
+            <tr>
+              <td>Retain Local Files</td>
+              <td>초기: <span class="bk-badge bk-badge-green">활성화</span></td>
+              <td>오프로드 후 서버 원본 파일 유지 (안전하게 시작)</td>
+            </tr>
+            <tr>
+              <td>Mirror Delete</td>
+              <td>선택 사항</td>
+              <td>WordPress에서 파일 삭제 시 B2에서도 삭제</td>
+            </tr>
+            <tr>
+              <td>File Versioning</td>
+              <td>선택 사항</td>
+              <td>파일 경로에 타임스탬프 추가 (캐시 문제 방지)</td>
+            </tr>
+            <tr>
+              <td>Custom Path Prefix</td>
+              <td>비워두기 또는 <code>wp-content/uploads</code></td>
+              <td>B2 버킷 내 저장 경로 접두어</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bk-tip">
+        <strong>💡 초기 설정 권장:</strong> 처음에는 <em>Retain Local Files</em>를 활성화해서 로컬 파일을 유지하면서 테스트하세요. 정상 작동 확인 후 로컬 파일 삭제를 고려하세요.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">6</div>
+      <p class="bk-step-title">기존 미디어 파일 일괄 오프로드 (Bulk Offload)</p>
+    </div>
+    <div class="bk-step-body">
+      <p>이미 업로드된 파일들을 B2로 이전하려면 Bulk Offload 기능을 사용합니다.</p>
+      <ol class="bk-ol">
+        <li>WordPress 관리자 → <strong>Media Offloader → Media Overview</strong></li>
+        <li>현재 로컬에만 있는 파일 수 확인</li>
+        <li><strong>Bulk Offload</strong> (또는 Start Offloading) 버튼 클릭</li>
+        <li>무료 버전: 배치당 50개 파일씩 처리 → 완료될 때까지 페이지 유지</li>
+      </ol>
+      <div class="bk-tip">
+        <strong>💡 대용량 라이브러리:</strong> 파일이 수천 개 이상이면 배치 처리가 여러 번 반복됩니다. 브라우저 탭을 닫지 말고 완료될 때까지 기다리세요. 중단 시 <strong>Cancel</strong> 버튼으로 중지할 수 있습니다.
+      </div>
+      <div class="bk-info">
+        <strong>✅ WooCommerce 상품 이미지:</strong> 상품 대표 이미지, 갤러리 이미지, WooCommerce 전용 썸네일 크기 모두 자동으로 함께 오프로드됩니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">7</div>
+      <p class="bk-step-title">Dokan 멀티벤더 환경 추가 확인 사항</p>
+    </div>
+    <div class="bk-step-body">
+      <p>Dokan에서 벤더(판매자)가 상품을 등록할 때 업로드하는 이미지도 WordPress 미디어 라이브러리를 통해 처리되므로 Advanced Media Offloader가 자동으로 적용됩니다. 아래 항목을 추가로 확인하세요.</p>
+
+      <div class="bk-table-scroll">
+        <table class="bk-table">
+          <thead>
+            <tr>
+              <th>확인 항목</th>
+              <th>확인 방법</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>벤더 상품 이미지 URL</td>
+              <td>벤더 상품 페이지 → 이미지 오른쪽 클릭 → URL 확인</td>
+              <td>B2 도메인으로 시작해야 정상</td>
+            </tr>
+            <tr>
+              <td>벤더 스토어 배너/로고</td>
+              <td>Dokan 스토어 페이지 확인</td>
+              <td>wp-content/uploads 경유 URL이면 오프로드 됨</td>
+            </tr>
+            <tr>
+              <td>디지털 다운로드 파일</td>
+              <td>WooCommerce → 상품 → 다운로드 파일 URL 확인</td>
+              <td>Private 파일은 현재 무료 버전 미지원</td>
+            </tr>
+            <tr>
+              <td>캐시 플러그인</td>
+              <td>캐시 전체 삭제 후 확인</td>
+              <td>이전 URL이 캐시될 수 있으므로 반드시 삭제</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bk-warn">
+        <strong>⚠️ 디지털 다운로드 파일 주의:</strong> WooCommerce의 <em>Downloadable Products</em> 파일(구매 후 다운로드 제공 파일)을 B2로 오프로드하면 URL이 공개됩니다. 유료 파일은 반드시 <em>Retain Local Files</em> 정책을 사용하거나 오프로드 대상에서 제외하세요.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">8</div>
+      <p class="bk-step-title">(선택) Cloudflare CDN 연동으로 무료 트래픽 사용</p>
+    </div>
+    <div class="bk-step-body">
+      <p>Backblaze는 <strong>Cloudflare Bandwidth Alliance</strong> 파트너입니다. Cloudflare를 CDN으로 설정하면 B2 ↔ Cloudflare 간 트래픽이 무료입니다.</p>
+
+      <div class="bk-flow">
+        <div class="bk-flow-item">방문자</div>
+        <div class="bk-flow-arrow">→</div>
+        <div class="bk-flow-item">Cloudflare CDN</div>
+        <div class="bk-flow-arrow">→</div>
+        <div class="bk-flow-item">Backblaze B2</div>
+        <div class="bk-flow-arrow">→</div>
+        <div class="bk-flow-item">이그레스 비용 0원</div>
+      </div>
+
+      <ol class="bk-ol">
+        <li>Cloudflare 대시보드 → 도메인 선택 → <strong>DNS</strong></li>
+        <li>CNAME 레코드 추가: <code>media.yourdomain.com</code> → <code>버킷명.s3.리전.backblazeb2.com</code></li>
+        <li><strong>Proxy status</strong>를 <span class="bk-badge bk-badge-orange" style="background:#fff7ed;color:#9a3412">Proxied (주황색 구름)</span>으로 설정</li>
+        <li>wp-config.php의 <code>ADVMO_BACKBLAZE_B2_DOMAIN</code>을 커스텀 도메인으로 변경:<br>
+          <code>https://media.yourdomain.com/</code>
+        </li>
+      </ol>
+
+      <div class="bk-info">
+        <strong>✅ 결과:</strong> 이미지 URL이 <code>media.yourdomain.com</code>으로 제공되어 브랜드 일관성을 유지하면서 Cloudflare 글로벌 CDN 가속을 무료로 사용할 수 있습니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 정상 작동 확인 -->
+  <div class="bk-step-block">
+    <div class="bk-step-header">
+      <div class="bk-step-num">✓</div>
+      <p class="bk-step-title">최종 정상 작동 확인 체크리스트</p>
+    </div>
+    <div class="bk-step-body">
+      <ul class="bk-checklist">
+        <li>새 이미지를 미디어 라이브러리에 업로드 → B2 버킷에서 파일 확인</li>
+        <li>미디어 라이브러리의 이미지 URL이 B2 도메인으로 시작하는지 확인</li>
+        <li>WooCommerce 상품 페이지 이미지 정상 로딩 확인</li>
+        <li>Dokan 벤더 스토어 이미지 정상 로딩 확인</li>
+        <li>워드프레스 캐시 플러그인의 캐시 삭제 후 재확인</li>
+        <li>Media Offloader → Media Overview에서 에러 항목 없는지 확인</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<!-- /bk-guide-wrap -->
